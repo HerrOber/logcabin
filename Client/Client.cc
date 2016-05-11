@@ -385,11 +385,32 @@ Tree::listDirectory(const std::string& path,
         children);
 }
 
+Result
+Tree::listDirectoryLocal(const std::string& path,
+                    std::vector<std::string>& children) const
+{
+    std::shared_ptr<const TreeDetails> treeDetails = getTreeDetails();
+    return treeDetails->clientImpl->listDirectoryLocal(
+        path,
+        treeDetails->workingDirectory,
+        treeDetails->condition,
+        ClientImpl::absTimeout(treeDetails->timeoutNanos),
+        children);
+}
+
 std::vector<std::string>
 Tree::listDirectoryEx(const std::string& path) const
 {
     std::vector<std::string> children;
     throwException(listDirectory(path, children));
+    return children;
+}
+
+std::vector<std::string>
+Tree::listDirectoryExLocal(const std::string& path) const
+{
+    std::vector<std::string> children;
+    throwException(listDirectoryLocal(path, children));
     return children;
 }
 
@@ -440,11 +461,52 @@ Tree::read(const std::string& path, std::string& contents) const
         contents);
 }
 
+Result
+Tree::readLocal(const std::string& path, std::string& contents) const
+{
+    std::shared_ptr<const TreeDetails> treeDetails = getTreeDetails();
+    return treeDetails->clientImpl->readLocal(
+        path,
+        treeDetails->workingDirectory,
+        treeDetails->condition,
+        ClientImpl::absTimeout(treeDetails->timeoutNanos),
+        contents);
+}
+
+Result
+Tree::makeLeader(const std::string& path, std::string& contents) const
+{
+    std::shared_ptr<const TreeDetails> treeDetails = getTreeDetails();
+    return treeDetails->clientImpl->makeLeader(
+        path,
+        treeDetails->workingDirectory,
+        treeDetails->condition,
+        ClientImpl::absTimeout(treeDetails->timeoutNanos),
+        contents);
+}
+
+std::string
+Tree::makeLeaderEx(const std::string& path) const
+{
+    std::string contents;
+    makeLeader(path, contents);
+    return contents;
+}
+
 std::string
 Tree::readEx(const std::string& path) const
 {
     std::string contents;
     throwException(read(path, contents));
+    return contents;
+}
+
+
+std::string
+Tree::readExLocal(const std::string& path) const
+{
+    std::string contents;
+    throwException(readLocal(path, contents));
     return contents;
 }
 

@@ -65,6 +65,11 @@ ClientService::handleRPC(RPC::ServerRPC rpc)
         case OpCode::STATE_MACHINE_QUERY:
             stateMachineQuery(std::move(rpc));
             break;
+        case OpCode::STATE_MACHINE_QUERY_LOCAL:
+            stateMachineQueryLocal(std::move(rpc));
+        case OpCode::MAKE_LEADER_CMD:
+            makeLeader(std::move(rpc));
+            break;
         default:
             WARNING("Received RPC request with unknown opcode %u: "
                     "rejecting it as invalid request",
@@ -180,6 +185,7 @@ ClientService::stateMachineQuery(RPC::ServerRPC rpc)
     std::pair<Result, uint64_t> result = globals.raft->getLastCommitIndex();
     if (result.first == Result::RETRY || result.first == Result::NOT_LEADER) {
         Protocol::Client::Error error;
+        NOTICE("\nSETTING ERROR TO NOT_LEADER\n");
         error.set_error_code(Protocol::Client::Error::NOT_LEADER);
         std::string leaderHint = globals.raft->getLeaderHint();
         if (!leaderHint.empty())
@@ -187,6 +193,44 @@ ClientService::stateMachineQuery(RPC::ServerRPC rpc)
         rpc.returnError(error);
         return;
     }
+    assert(result.first == Result::SUCCESS);
+    uint64_t logIndex = result.second;
+    globals.stateMachine->wait(logIndex);
+    if (!globals.stateMachine->query(request, response))
+        rpc.rejectInvalidRequest();
+    rpc.reply(response);
+}
+
+void
+ClientService::stateMachineQueryLocal(RPC::ServerRPC rpc)
+{
+    PRELUDE(StateMachineQuery);
+    //std::pair<Result, uint64_t> result = globals.raft->getLastCommitIndex();
+    std::pair<Result, uint64_t> result = globals.raft->getLastCommitIndexLocal();  // makes it possible to read from local non leader SM
+    if (result.first == Result::RETRY || result.first == Result::NOT_LEADER) {
+        Protocol::Client::Error error;
+        NOTICE("\nSETTING ERROR TO NOT_LEADER\n");
+        error.set_error_code(Protocol::Client::Error::NOT_LEADER);
+        std::string leaderHint = globals.raft->getLeaderHint();
+        if (!leaderHint.empty())
+            error.set_leader_hint(leaderHint);
+        rpc.returnError(error);
+        return;
+    }
+    assert(result.first == Result::SUCCESS);
+    uint64_t logIndex = result.second;
+    globals.stateMachine->wait(logIndex);
+    if (!globals.stateMachine->query(request, response))
+        rpc.rejectInvalidRequest();
+    rpc.reply(response);
+}
+
+void
+ClientService::makeLeader(RPC::ServerRPC rpc)
+{
+    NOTICE("\nReceived make leader CLIENT RPC Rquest \n");
+    PRELUDE(StateMachineQuery);
+    std::pair<Result, uint64_t> result = (globals.raft)->timeoutElectionTimer();  // makes it possible to read from local non leader SM   
     assert(result.first == Result::SUCCESS);
     uint64_t logIndex = result.second;
     globals.stateMachine->wait(logIndex);

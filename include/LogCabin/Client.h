@@ -461,10 +461,17 @@ class Tree {
     listDirectory(const std::string& path,
                   std::vector<std::string>& children) const;
 
+    Result
+    readLocal(std::string& contents) const;
+
+    Result
+    listDirectoryLocal(const std::string& path,
+                  std::vector<std::string>& children) const;
     /**
      * Like listDirectory but throws exceptions upon errors.
      */
     std::vector<std::string> listDirectoryEx(const std::string& path) const;
+    std::vector<std::string> listDirectoryExLocal(const std::string& path) const;
 
     /**
      * Make sure a directory does not exist.
@@ -538,10 +545,25 @@ class Tree {
     read(const std::string& path, std::string& contents) const;
 
     /**
+    * Same as read but lets read locally without being leader
+    */
+    Result
+    readLocal(const std::string& path, std::string& contents) const;
+
+    /**
      * Like read but throws exceptions upon errors.
      */
     std::string
     readEx(const std::string& path) const;
+
+    std::string
+    readExLocal(const std::string& path) const;
+
+    Result
+    makeLeader(const std::string& path, std::string& contents) const;
+    
+    std::string
+    makeLeaderEx(const std::string& path) const;
 
     /**
      * Make sure a file does not exist.

@@ -1182,6 +1182,12 @@ RaftConsensus::getLastCommitIndex() const
         return {ClientResult::SUCCESS, commitIndex};
 }
 
+std::pair<RaftConsensus::ClientResult, uint64_t>
+RaftConsensus::getLastCommitIndexLocal() const
+{
+    return {ClientResult::SUCCESS, commitIndex};
+}
+
 std::string
 RaftConsensus::getLeaderHint() const
 {
@@ -1537,7 +1543,7 @@ RaftConsensus::handleRequestVote(
                     (request.last_log_term() == lastLogTerm &&
                      request.last_log_index() >= lastLogIndex));
 
-    if (withholdVotesUntil > Clock::now()) {
+    /*if (withholdVotesUntil > Clock::now()) {
         NOTICE("Rejecting RequestVote for term %lu from server %lu, since "
                "this server (which is in term %lu) recently heard from a "
                "leader (%lu). Should server %lu be shut down?",
@@ -1547,7 +1553,7 @@ RaftConsensus::handleRequestVote(
         response.set_granted(false);
         response.set_log_ok(logIsOk);
         return;
-    }
+    }*/
 
     if (request.term() > currentTerm) {
         NOTICE("Received RequestVote request from server %lu in term %lu "
@@ -2829,6 +2835,18 @@ RaftConsensus::setElectionTimer()
             Core::StringUtil::toString(duration).c_str());
     startElectionAt = Clock::now() + duration;
     stateChanged.notify_all();
+}
+
+std::pair<RaftConsensus::ClientResult, uint64_t>
+RaftConsensus::timeoutElectionTimer() //const
+{
+    startNewElection();
+    /*std::chrono::nanoseconds duration(1);
+    VERBOSE("Will become candidate in %s",
+            Core::StringUtil::toString(duration).c_str());
+    startElectionAt = Clock::now() + duration;
+    stateChanged.notify_all();*/
+    return {ClientResult::SUCCESS, 0};
 }
 
 void

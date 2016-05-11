@@ -107,7 +107,8 @@ LeaderRPC::Call::wait(google::protobuf::Message& response,
     typedef RPC::ClientRPC::Status RPCStatus;
     Protocol::Client::Error error;
     RPCStatus status = rpc.waitForReply(&response, &error, timeout);
-
+    //NOTICE("\nCalling leader!!!!!\n");
+    
     // Decode the response
     switch (status) {
         case RPCStatus::OK:

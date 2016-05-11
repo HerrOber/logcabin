@@ -123,6 +123,12 @@ class ClientImpl {
                          const Condition& condition,
                          TimePoint timeout,
                          std::vector<std::string>& children);
+    Result listDirectoryLocal(const std::string& path,
+                         const std::string& workingDirectory,
+                         const Condition& condition,
+                         TimePoint timeout,
+                         std::vector<std::string>& children);
+
 
     /// See Tree::removeDirectory.
     Result removeDirectory(const std::string& path,
@@ -143,6 +149,19 @@ class ClientImpl {
                 const Condition& condition,
                 TimePoint timeout,
                 std::string& contents);
+
+    /// See Tree::read.
+    Result readLocal(const std::string& path,
+                const std::string& workingDirectory,
+                const Condition& condition,
+                TimePoint timeout,
+                std::string& contents);
+
+    Result makeLeader(const std::string& path,
+                 const std::string& workingDirectory,
+                 const Condition& condition,
+                 TimePoint timeout,
+                 std::string& contents);
 
     /// See Tree::removeFile.
     Result removeFile(const std::string& path,

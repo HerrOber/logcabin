@@ -38,6 +38,7 @@ enum class Command {
     WRITE,
     READ,
     REMOVE,
+    LEADER,
 };
 
 /**
@@ -138,10 +139,17 @@ class OptionParser {
         } else if (cmdStr == "remove" || cmdStr == "rm" ||
                    cmdStr == "removeFile") {
             command = Command::REMOVE;
-        } else {
+        } else if (cmdStr == "leader" || cmdStr == "make_leder" || cmdStr == "make-leder") {
+            command = Command::LEADER;
+        }else {
             std::cout << "Unknown command: " << cmdStr << std::endl;
             usage();
             exit(1);
+        }
+
+        if (command == Command::LEADER){
+            path = "/";
+            return;
         }
 
         if (optind < argc) {
@@ -300,6 +308,22 @@ dumpTree(const Tree& tree, std::string path)
     }
 }
 
+void
+dumpTreeLocal(const Tree& tree, std::string path)
+{
+    std::cout << path << std::endl;
+    std::vector<std::string> children = tree.listDirectoryExLocal(path);
+    for (auto it = children.begin(); it != children.end(); ++it) {
+        std::string child = path + *it;
+        if (*child.rbegin() == '/') { // directory
+            dumpTreeLocal(tree, child);
+        } else { // file
+            std::cout << child << ": " << std::endl;
+            std::cout << "    " << tree.readExLocal(child) << std::endl;
+        }
+    }
+}
+
 std::string
 readStdin()
 {
@@ -352,7 +376,8 @@ main(int argc, char** argv)
             case Command::DUMP: {
                 if (path.empty() || path.at(path.size() - 1) != '/')
                     path.append("/");
-                dumpTree(tree, path);
+                dumpTreeLocal(tree, path);
+                //dumpTree(tree, path);
                 break;
             }
             case Command::RMDIR:
@@ -362,7 +387,20 @@ main(int argc, char** argv)
                 tree.writeEx(path, readStdin());
                 break;
             case Command::READ: {
-                std::string contents = tree.readEx(path);
+                //std::string contents = tree.readEx(path);
+                std::string contents = tree.readExLocal(path);
+                std::cout << contents;
+                if (contents.empty() ||
+                    contents.at(contents.size() - 1) != '\n') {
+                    std::cout << std::endl;
+                } else {
+                    std::cout.flush();
+                }
+                break;
+            }
+            case Command::LEADER: {
+                //std::string contents = tree.readEx(path);
+                std::string contents = tree.makeLeaderEx(path);
                 std::cout << contents;
                 if (contents.empty() ||
                     contents.at(contents.size() - 1) != '\n') {

@@ -156,6 +156,84 @@ treeCall(LeaderRPCBase& leaderRPC,
     }
 }
 
+void
+treeCallLocal(LeaderRPCBase& leaderRPC,
+         const Protocol::Client::ReadOnlyTree::Request& request,
+         Protocol::Client::ReadOnlyTree::Response& response,
+         ClientImpl::TimePoint timeout)
+{
+    VERBOSE("Calling read-only tree query with request:\n%s",
+            Core::StringUtil::trim(
+                Core::ProtoBuf::dumpString(request)).c_str());
+    LeaderRPC::Status status;
+    Protocol::Client::StateMachineQuery::Request qrequest;
+    Protocol::Client::StateMachineQuery::Response qresponse;
+    *qrequest.mutable_tree() = request;
+    status = leaderRPC.call(Protocol::Client::OpCode::STATE_MACHINE_QUERY_LOCAL,
+                            qrequest, qresponse, timeout);
+    switch (status) {
+        case LeaderRPC::Status::OK:
+            response = *qresponse.mutable_tree();
+            VERBOSE("Reply to read-only tree query:\n%s",
+                    Core::StringUtil::trim(
+                        Core::ProtoBuf::dumpString(response)).c_str());
+            break;
+        case LeaderRPC::Status::TIMEOUT:
+            response.set_status(Protocol::Client::Status::TIMEOUT);
+            response.set_error("Client-specified timeout elapsed");
+            VERBOSE("Timeout elapsed on read-only tree query");
+            break;
+        case LeaderRPC::Status::INVALID_REQUEST:
+            // TODO(ongaro): Once any new Tree request types are introduced,
+            // this PANIC will need to move up the call stack, so that we can
+            // try a new-style request and then ask for forgiveness if it
+            // fails. Same for the read-write tree calls below.
+            PANIC("The server and/or replicated state machine doesn't support "
+                  "the read-only tree query or claims the request is "
+                  "malformed. Request is: %s",
+                  Core::ProtoBuf::dumpString(request).c_str());
+    }
+}
+
+void
+makeLeaderCall(LeaderRPCBase& leaderRPC,
+         const Protocol::Client::ReadOnlyTree::Request& request,
+         Protocol::Client::ReadOnlyTree::Response& response,
+         ClientImpl::TimePoint timeout)
+{
+    VERBOSE("Calling read-only tree query with request:\n%s",
+            Core::StringUtil::trim(
+                Core::ProtoBuf::dumpString(request)).c_str());
+    LeaderRPC::Status status;
+    Protocol::Client::StateMachineQuery::Request qrequest;
+    Protocol::Client::StateMachineQuery::Response qresponse;
+    *qrequest.mutable_tree() = request;
+    status = leaderRPC.call(Protocol::Client::OpCode::MAKE_LEADER_CMD,
+                            qrequest, qresponse, timeout);
+    switch (status) {
+        case LeaderRPC::Status::OK:
+            response = *qresponse.mutable_tree();
+            VERBOSE("Reply to read-only tree query:\n%s",
+                    Core::StringUtil::trim(
+                        Core::ProtoBuf::dumpString(response)).c_str());
+            break;
+        case LeaderRPC::Status::TIMEOUT:
+            response.set_status(Protocol::Client::Status::TIMEOUT);
+            response.set_error("Client-specified timeout elapsed");
+            VERBOSE("Timeout elapsed on read-only tree query");
+            break;
+        case LeaderRPC::Status::INVALID_REQUEST:
+            // TODO(ongaro): Once any new Tree request types are introduced,
+            // this PANIC will need to move up the call stack, so that we can
+            // try a new-style request and then ask for forgiveness if it
+            // fails. Same for the read-write tree calls below.
+            PANIC("The server and/or replicated state machine doesn't support "
+                  "the read-only tree query or claims the request is "
+                  "malformed. Request is: %s",
+                  Core::ProtoBuf::dumpString(request).c_str());
+    }
+}
+
 /**
  * Wrapper around LeaderRPC::call() that repackages a timeout as a
  * ReadWriteTree status and error message. Also checks whether getRPCInfo
@@ -734,6 +812,32 @@ ClientImpl::listDirectory(const std::string& path,
 }
 
 Result
+ClientImpl::listDirectoryLocal(const std::string& path,
+                          const std::string& workingDirectory,
+                          const Condition& condition,
+                          TimePoint timeout,
+                          std::vector<std::string>& children)
+{
+    children.clear();
+    std::string realPath;
+    Result result = canonicalize(path, workingDirectory, realPath);
+    if (result.status != Status::OK)
+        return result;
+    Protocol::Client::ReadOnlyTree::Request request;
+    setCondition(request, condition);
+    request.mutable_list_directory()->set_path(realPath);
+    Protocol::Client::ReadOnlyTree::Response response;
+    treeCallLocal(*leaderRPC,
+             request, response, timeout);
+    if (response.status() != Protocol::Client::Status::OK)
+        return treeError(response);
+    children = std::vector<std::string>(
+                    response.list_directory().child().begin(),
+                    response.list_directory().child().end());
+    return Result();
+}
+
+Result
 ClientImpl::removeDirectory(const std::string& path,
                             const std::string& workingDirectory,
                             const Condition& condition,
@@ -800,6 +904,54 @@ ClientImpl::read(const std::string& path,
     request.mutable_read()->set_path(realPath);
     Protocol::Client::ReadOnlyTree::Response response;
     treeCall(*leaderRPC,
+             request, response, timeout);
+    if (response.status() != Protocol::Client::Status::OK)
+        return treeError(response);
+    contents = response.read().contents();
+    return Result();
+}
+
+Result
+ClientImpl::readLocal(const std::string& path,
+                 const std::string& workingDirectory,
+                 const Condition& condition,
+                 TimePoint timeout,
+                 std::string& contents)
+{
+    contents = "";
+    std::string realPath;
+    Result result = canonicalize(path, workingDirectory, realPath);
+    if (result.status != Status::OK)
+        return result;
+    Protocol::Client::ReadOnlyTree::Request request;
+    setCondition(request, condition);
+    request.mutable_read()->set_path(realPath);
+    Protocol::Client::ReadOnlyTree::Response response;
+    treeCallLocal(*leaderRPC,
+             request, response, timeout);
+    if (response.status() != Protocol::Client::Status::OK)
+        return treeError(response);
+    contents = response.read().contents();
+    return Result();
+}
+
+Result
+ClientImpl::makeLeader(const std::string& path,
+                 const std::string& workingDirectory,
+                 const Condition& condition,
+                 TimePoint timeout,
+                 std::string& contents)
+{
+    contents = "";
+    std::string realPath;
+    Result result = canonicalize(path, workingDirectory, realPath);
+    if (result.status != Status::OK)
+        return result;
+    Protocol::Client::ReadOnlyTree::Request request;
+    setCondition(request, condition);
+    request.mutable_read()->set_path(realPath);
+    Protocol::Client::ReadOnlyTree::Response response;
+    makeLeaderCall(*leaderRPC,
              request, response, timeout);
     if (response.status() != Protocol::Client::Status::OK)
         return treeError(response);

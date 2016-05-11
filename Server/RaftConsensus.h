@@ -1026,6 +1026,14 @@ class RaftConsensus {
     std::pair<ClientResult, uint64_t> getLastCommitIndex() const;
 
     /**
+    * Same as getLastCommitIndex() but doesn't require local node to be leader
+    */
+    std::pair<ClientResult, uint64_t> getLastCommitIndexLocal() const;
+
+
+    std::pair<RaftConsensus::ClientResult, uint64_t> timeoutElectionTimer(); /*const;*/
+
+    /**
      * Return the network address for a recent leader, if known,
      * or empty string otherwise.
      */
