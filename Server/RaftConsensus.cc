@@ -2062,11 +2062,12 @@ RaftConsensus::leaderDiskThreadMain()
 void
 RaftConsensus::timerThreadMain()
 {
+    
     std::unique_lock<Mutex> lockGuard(mutex);
     Core::ThreadId::setName("startNewElection");
     while (!exiting) {
         if (Clock::now() >= startElectionAt)
-            startNewElection();
+            startNewElection();//setElectionTimer();
         stateChanged.wait_until(lockGuard, startElectionAt);
     }
 }
