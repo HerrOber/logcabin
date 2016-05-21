@@ -234,6 +234,45 @@ makeLeaderCall(LeaderRPCBase& leaderRPC,
     }
 }
 
+void
+getLeaderCall(LeaderRPCBase& leaderRPC,
+         const Protocol::Client::GetServerInfo::Request& request,
+         Protocol::Client::GetServerInfo::Response& response,
+         ClientImpl::TimePoint timeout, 
+         std::string& contents)
+{
+    VERBOSE("Calling read-only tree query with request:\n%s",
+            Core::StringUtil::trim(
+                Core::ProtoBuf::dumpString(request)).c_str());
+    LeaderRPC::Status status;
+    Protocol::Client::GetServerInfo::Request qrequest;
+    Protocol::Client::GetServerInfo::Response qresponse;
+    status = leaderRPC.call(Protocol::Client::OpCode::GET_LEADER_CMD,
+                            qrequest, qresponse, timeout);
+    switch (status) {
+        case LeaderRPC::Status::OK:
+            contents = qresponse.server_info().addresses();
+            VERBOSE("Reply to read-only tree query:\n%s",
+                    Core::StringUtil::trim(
+                        Core::ProtoBuf::dumpString(response)).c_str());
+            break;
+        case LeaderRPC::Status::TIMEOUT:
+            //response.set_status(Protocol::Client::Status::TIMEOUT);
+            //response.set_error("Client-specified timeout elapsed");
+            VERBOSE("Timeout elapsed on read-only tree query");
+            break;
+        case LeaderRPC::Status::INVALID_REQUEST:
+            // TODO(ongaro): Once any new Tree request types are introduced,
+            // this PANIC will need to move up the call stack, so that we can
+            // try a new-style request and then ask for forgiveness if it
+            // fails. Same for the read-write tree calls below.
+            PANIC("The server and/or replicated state machine doesn't support "
+                  "the read-only tree query or claims the request is "
+                  "malformed. Request is: %s",
+                  Core::ProtoBuf::dumpString(request).c_str());
+    }
+}
+
 /**
  * Wrapper around LeaderRPC::call() that repackages a timeout as a
  * ReadWriteTree status and error message. Also checks whether getRPCInfo
@@ -957,6 +996,50 @@ ClientImpl::makeLeader(const std::string& path,
         return treeError(response);
     contents = response.read().contents();
     return Result();
+}
+
+Result
+ClientImpl::getLeader(TimePoint timeout,
+                 std::string& contents)
+{
+    contents = "";
+    std::string path = "";
+    std::string realPath = "";
+    std::string workingDirectory = "";
+    Result result = canonicalize(path, workingDirectory, realPath);
+    if (result.status != Status::OK)
+        return result;
+    Protocol::Client::GetServerInfo::Request request;
+    //setCondition(request, condition);
+    //request.mutable_read()->set_path(path);
+    Protocol::Client::GetServerInfo::Response response;
+    getLeaderCall(*leaderRPC,
+             request, response, timeout, contents);
+    //if (response.status() != Protocol::Client::Status::OK)
+      //  return treeError(response);
+    
+    return Result();
+
+//////////////////////////////////////////////7
+
+    /*
+    Protocol::Client::GetServerInfo::Request request;
+    Protocol::Client::GetServerInfo::Response response;
+
+    LeaderRPC::Status status;
+    status = leaderRPC.call(Protocol::Client::OpCode::GET_LEADER_CMD,
+                            request, response, timeout);
+    switch (status) {
+        case LeaderRPC::Status::OK:
+            contents = response.server_info().addresses();
+            break;
+        case LeaderRPC::Status::TIMEOUT:
+            response.set_status(Protocol::Client::Status::TIMEOUT);
+            response.set_error("Client-specified timeout elapsed");
+            VERBOSE("Timeout elapsed on read-only tree query");
+        }
+    return Result();
+    */
 }
 
 Result

@@ -565,6 +565,12 @@ class Tree {
     std::string
     makeLeaderEx(const std::string& path) const;
 
+    Result
+    getLeader(std::string& contents) const;
+    
+    std::string
+    getLeaderEx() const;
+
     /**
      * Make sure a file does not exist.
      * \param path

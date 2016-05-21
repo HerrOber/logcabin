@@ -493,6 +493,23 @@ Tree::makeLeaderEx(const std::string& path) const
     return contents;
 }
 
+Result
+Tree::getLeader(std::string& contents) const
+{
+    std::shared_ptr<const TreeDetails> treeDetails = getTreeDetails();
+    return treeDetails->clientImpl->getLeader(
+        ClientImpl::absTimeout(treeDetails->timeoutNanos),
+        contents);
+}
+
+std::string
+Tree::getLeaderEx() const
+{
+    std::string contents;
+    getLeader(contents);
+    return contents;
+}
+
 std::string
 Tree::readEx(const std::string& path) const
 {

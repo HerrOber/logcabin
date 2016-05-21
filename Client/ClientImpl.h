@@ -163,6 +163,9 @@ class ClientImpl {
                  TimePoint timeout,
                  std::string& contents);
 
+    Result getLeader(TimePoint timeout,
+                 std::string& contents);
+
     /// See Tree::removeFile.
     Result removeFile(const std::string& path,
                       const std::string& workingDirectory,

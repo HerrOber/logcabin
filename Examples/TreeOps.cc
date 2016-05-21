@@ -39,6 +39,7 @@ enum class Command {
     READ,
     REMOVE,
     LEADER,
+    GETLEADER,
 };
 
 /**
@@ -141,6 +142,8 @@ class OptionParser {
             command = Command::REMOVE;
         } else if (cmdStr == "leader" || cmdStr == "make_leder" || cmdStr == "make-leder") {
             command = Command::LEADER;
+        } else if (cmdStr == "getleader" || cmdStr == "get_leder" || cmdStr == "get-leder") {
+            command = Command::GETLEADER;
         }else {
             std::cout << "Unknown command: " << cmdStr << std::endl;
             usage();
@@ -149,6 +152,10 @@ class OptionParser {
 
         if (command == Command::LEADER){
             path = "/";
+            return;
+        }
+
+        if (command == Command::GETLEADER){
             return;
         }
 
@@ -401,6 +408,18 @@ main(int argc, char** argv)
             case Command::LEADER: {
                 //std::string contents = tree.readEx(path);
                 std::string contents = tree.makeLeaderEx(path);
+                std::cout << contents;
+                if (contents.empty() ||
+                    contents.at(contents.size() - 1) != '\n') {
+                    std::cout << std::endl;
+                } else {
+                    std::cout.flush();
+                }
+                break;
+            }
+            case Command::GETLEADER: {
+                //std::string contents = tree.readEx(path);
+                std::string contents = tree.getLeaderEx();
                 std::cout << contents;
                 if (contents.empty() ||
                     contents.at(contents.size() - 1) != '\n') {

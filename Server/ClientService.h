@@ -59,6 +59,7 @@ class ClientService : public RPC::Service {
     void stateMachineQuery(RPC::ServerRPC rpc);
     void stateMachineQueryLocal(RPC::ServerRPC rpc);
     void makeLeader(RPC::ServerRPC rpc);
+    void getLeader(RPC::ServerRPC rpc);
     void verifyRecipient(RPC::ServerRPC rpc);
 
     /**

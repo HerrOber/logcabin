@@ -70,6 +70,9 @@ ClientService::handleRPC(RPC::ServerRPC rpc)
         case OpCode::MAKE_LEADER_CMD:
             makeLeader(std::move(rpc));
             break;
+        case OpCode::GET_LEADER_CMD:
+            getLeader(std::move(rpc));
+            break;
         default:
             WARNING("Received RPC request with unknown opcode %u: "
                     "rejecting it as invalid request",
@@ -185,7 +188,6 @@ ClientService::stateMachineQuery(RPC::ServerRPC rpc)
     std::pair<Result, uint64_t> result = globals.raft->getLastCommitIndex();
     if (result.first == Result::RETRY || result.first == Result::NOT_LEADER) {
         Protocol::Client::Error error;
-        NOTICE("\nSETTING ERROR TO NOT_LEADER\n");
         error.set_error_code(Protocol::Client::Error::NOT_LEADER);
         std::string leaderHint = globals.raft->getLeaderHint();
         if (!leaderHint.empty())
@@ -209,7 +211,6 @@ ClientService::stateMachineQueryLocal(RPC::ServerRPC rpc)
     std::pair<Result, uint64_t> result = globals.raft->getLastCommitIndexLocal();  // makes it possible to read from local non leader SM
     if (result.first == Result::RETRY || result.first == Result::NOT_LEADER) {
         Protocol::Client::Error error;
-        NOTICE("\nSETTING ERROR TO NOT_LEADER\n");
         error.set_error_code(Protocol::Client::Error::NOT_LEADER);
         std::string leaderHint = globals.raft->getLeaderHint();
         if (!leaderHint.empty())
@@ -236,6 +237,18 @@ ClientService::makeLeader(RPC::ServerRPC rpc)
     globals.stateMachine->wait(logIndex);
     if (!globals.stateMachine->query(request, response))
         rpc.rejectInvalidRequest();
+    rpc.reply(response);
+}
+
+void
+ClientService::getLeader(RPC::ServerRPC rpc)
+{
+    NOTICE("\nGet Leader CLIENT RPC Rquest \n");
+    PRELUDE(GetServerInfo);
+    std::string contents = globals.raft->getLeaderHint();
+    Protocol::Client::Server& info = *response.mutable_server_info();
+    info.set_server_id(globals.raft->serverId);
+    info.set_addresses(contents);
     rpc.reply(response);
 }
 
