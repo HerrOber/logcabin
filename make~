@@ -1,0 +1,2 @@
+scons;
+sh python-wrap foo;

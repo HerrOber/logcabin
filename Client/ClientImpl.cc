@@ -201,6 +201,7 @@ makeLeaderCall(LeaderRPCBase& leaderRPC,
          Protocol::Client::ReadOnlyTree::Response& response,
          ClientImpl::TimePoint timeout)
 {
+
     VERBOSE("Calling read-only tree query with request:\n%s",
             Core::StringUtil::trim(
                 Core::ProtoBuf::dumpString(request)).c_str());
@@ -208,6 +209,7 @@ makeLeaderCall(LeaderRPCBase& leaderRPC,
     Protocol::Client::StateMachineQuery::Request qrequest;
     Protocol::Client::StateMachineQuery::Response qresponse;
     *qrequest.mutable_tree() = request;
+    NOTICE("\nMAKE LEADER CLIENT IMPL\n");
     status = leaderRPC.call(Protocol::Client::OpCode::MAKE_LEADER_CMD,
                             qrequest, qresponse, timeout);
     switch (status) {

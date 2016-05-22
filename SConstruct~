@@ -65,6 +65,8 @@ env = Environment(options = opts,
                   ENV = os.environ)
 Help(opts.GenerateHelpText(env))
 
+env['STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME']=1
+
 # Needed for Clang Static Analyzer's scan-build tool
 env["CC"] = os.getenv("CC") or env["CC"]
 env["CXX"] = os.getenv("CXX") or env["CXX"]
@@ -301,11 +303,9 @@ env.InstallAs('/usr/bin/logcabin',              'build/Examples/TreeOps')
 env.InstallAs('/usr/bin/logcabin-benchmark',    'build/Examples/Benchmark')
 env.InstallAs('/usr/bin/logcabin-reconfigure',  'build/Examples/Reconfigure')
 env.InstallAs('/usr/bin/logcabin-smoketest',    'build/Examples/SmokeTest')
-env.InstallAs('/usr/bin/logcabin-APC',    	'build/Impl/APC')
-env.InstallAs('/usr/bin/logcabin-Main',    	'build/Impl/Main')
-env.InstallAs('/usr/bin/logcabin-cc',    	'build/Impl/cc')
 env.InstallAs('/usr/bin/logcabin-storage',      'build/Storage/Tool')
 env.InstallAs('/var/log/logcabin',              'build/emptydir')
+env.InstallAs('/usr/bin/logcabin',              'build/Impl/Ops')
 env.Alias('install', ['/etc', '/usr', '/var'])
 
 

@@ -1,0 +1,8 @@
+Import('env', 'object_files')
+
+src = [
+    "ProtoBuf.cc",
+    "Tree.cc",
+]
+object_files['Tree'] = (env.SharedObject(src) +
+                        env.Protobuf("Snapshot.proto"))

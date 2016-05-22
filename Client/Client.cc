@@ -401,6 +401,7 @@ Tree::listDirectoryLocal(const std::string& path,
 std::vector<std::string>
 Tree::listDirectoryEx(const std::string& path) const
 {
+    //NOTICE("\n\ndump treeops1\n\n");
     std::vector<std::string> children;
     throwException(listDirectory(path, children));
     return children;
@@ -522,6 +523,8 @@ Tree::readEx(const std::string& path) const
 std::string
 Tree::readExLocal(const std::string& path) const
 {
+    //NOTICE("\n\ndump treeops1\n\n");
+
     std::string contents;
     throwException(readLocal(path, contents));
     return contents;

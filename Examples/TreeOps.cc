@@ -337,7 +337,7 @@ readStdin()
     std::cin >> std::noskipws;
     std::istream_iterator<char> it(std::cin);
     std::istream_iterator<char> end;
-    std::string results(it, end);
+    std::string results(it, end); 
     return results;
 }
 
@@ -361,10 +361,12 @@ main(int argc, char** argv)
         }
 
         if (!options.dir.empty()) {
+            std::cout << "\ndir\n\n\n\n\n" << std::endl;
             tree.setWorkingDirectoryEx(options.dir);
         }
 
         if (!options.condition.first.empty()) {
+            std::cout << "\ncond\n\n\n\n\n" << std::endl;
             tree.setConditionEx(options.condition.first,
                                 options.condition.second);
         }
@@ -381,6 +383,7 @@ main(int argc, char** argv)
                 break;
             }
             case Command::DUMP: {
+                //std::cout << "\n\ndump tsafsafsafasdfareeops1\n\n" << std::endl;
                 if (path.empty() || path.at(path.size() - 1) != '/')
                     path.append("/");
                 dumpTreeLocal(tree, path);
@@ -407,6 +410,7 @@ main(int argc, char** argv)
             }
             case Command::LEADER: {
                 //std::string contents = tree.readEx(path);
+                //std::cout << "\n\nMake leader treeops\n\n" << std::endl;
                 std::string contents = tree.makeLeaderEx(path);
                 std::cout << contents;
                 if (contents.empty() ||

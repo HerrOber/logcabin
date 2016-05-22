@@ -44,33 +44,42 @@ void
 ClientService::handleRPC(RPC::ServerRPC rpc)
 {
     using Protocol::Client::OpCode;
+    NOTICE("\n\nRPC\n\n");
 
     // Call the appropriate RPC handler based on the request's opCode.
     switch (rpc.getOpCode()) {
         case OpCode::GET_SERVER_INFO:
+            NOTICE("\n\nINFO\n\n");        
             getServerInfo(std::move(rpc));
             break;
         case OpCode::VERIFY_RECIPIENT:
+            NOTICE("\n\nVerify\n\n");        
             verifyRecipient(std::move(rpc));
             break;
         case OpCode::GET_CONFIGURATION:
+            NOTICE("\n\nConf\n\n");        
             getConfiguration(std::move(rpc));
             break;
         case OpCode::SET_CONFIGURATION:
+            NOTICE("\n\nset conf\n\n");        
             setConfiguration(std::move(rpc));
             break;
         case OpCode::STATE_MACHINE_COMMAND:
+            NOTICE("\n\nSM Command\n\n");        
             stateMachineCommand(std::move(rpc));
             break;
         case OpCode::STATE_MACHINE_QUERY:
             stateMachineQuery(std::move(rpc));
+            NOTICE("\n\nSM Query\n\n");
             break;
         case OpCode::STATE_MACHINE_QUERY_LOCAL:
             stateMachineQueryLocal(std::move(rpc));
         case OpCode::MAKE_LEADER_CMD:
+            NOTICE("\n\nMake Leader\n\n");
             makeLeader(std::move(rpc));
             break;
         case OpCode::GET_LEADER_CMD:
+            NOTICE("\n\nGet Leader\n\n");        
             getLeader(std::move(rpc));
             break;
         default:
@@ -229,7 +238,7 @@ ClientService::stateMachineQueryLocal(RPC::ServerRPC rpc)
 void
 ClientService::makeLeader(RPC::ServerRPC rpc)
 {
-    NOTICE("\nReceived make leader CLIENT RPC Rquest \n");
+    //NOTICE("\nReceived make leader CLIENT RPC Rquest \n");
     PRELUDE(StateMachineQuery);
     std::pair<Result, uint64_t> result = (globals.raft)->timeoutElectionTimer();  // makes it possible to read from local non leader SM   
     assert(result.first == Result::SUCCESS);
@@ -243,7 +252,7 @@ ClientService::makeLeader(RPC::ServerRPC rpc)
 void
 ClientService::getLeader(RPC::ServerRPC rpc)
 {
-    NOTICE("\nGet Leader CLIENT RPC Rquest \n");
+    //NOTICE("\nGet Leader CLIENT RPC Rquest \n");
     PRELUDE(GetServerInfo);
     std::string contents = globals.raft->getLeaderHint();
     Protocol::Client::Server& info = *response.mutable_server_info();

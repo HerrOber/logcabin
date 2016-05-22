@@ -3,15 +3,6 @@ Import('env')
 libs = [ "pthread", "protobuf", "rt", "cryptopp" ]
 
 env.Default([
-    env.Program("APC",
-                ["APC.cc", "#build/liblogcabin.a"],
-                LIBS = libs),
-
-    env.Program("Main",
-                ["Main.cc", "#build/liblogcabin.a"],
-                LIBS = libs),
-
-    env.Program("cc",
-                ["cc.cc", "#build/liblogcabin.a"],
-                LIBS = libs),
+    env.StaticLibrary("Ops", ['Ops.cc'],
+                LIBS = libs)
 ])

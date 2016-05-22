@@ -33,7 +33,7 @@ enum OpCode {
     GET_SERVER_INFO = 7;
     STATE_MACHINE_QUERY_LOCAL = 8;
     MAKE_LEADER_CMD = 9;
-    GET_LEADER_CMD = 10;
+    GET_LEADER_CMD = 0;
 };
 
 /**

@@ -1,0 +1,25 @@
+# $1 dir of $2 = name of c++ file, e.g. LeaderElection.cc. You should also have both a .h and .i file with the same name.
+
+echo Creating Python Interface From [$1/$2.cc, $1/$2.i, $1/$2.i] Using Swig.;
+
+cwd=$(pwd);
+cp $1/$2.i build/$1/$2.i;
+#cp $1/setup.py build/$1/setup.py;
+
+cd build/$1;
+
+swig -c++ -python $2.i;
+
+g++ -c -fPIC $2_wrap.cxx  -I/usr/include/python2.7 -I/usr/lib/python2.7;
+g++ -shared -Wl,-soname,_$2.so -o _$2.so $2.o $2_wrap.o;
+
+
+#sudo python setup.py sdist;
+#tar_file=$(ls dist);
+#mkdir extracted;
+#tar xopf dist/$tar_file -C extracted;
+#extracted_files=$(ls extracted);
+#echo $extracted_files;
+#sudo python extracted/$extracted_files/setup.py install;
+
+cd $cwd;

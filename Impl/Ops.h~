@@ -1,0 +1,21 @@
+
+class Ops{
+private:
+    std::string clusterAddr;
+    uint64_t timeout;	
+	std::string logPolicy;
+    int dumpTree(int);
+	int dumpTreeLocal();
+public:
+	Ops(std::string clusterAddr, uint64_t, std::string);
+	~Ops();
+	void mkdir();
+	void rmdir();
+	void read();
+	void write();
+	void remove();
+	void dump();
+	void list();
+	void makeLeader();
+	void getLeader();
+};
