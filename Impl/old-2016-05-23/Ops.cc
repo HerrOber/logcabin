@@ -171,7 +171,7 @@ using LogCabin::Client::Status;
     List all keys
     */
     void
-    Ops::listKeys(std::string path){
+    Ops::list(std::string path){
         std::vector<std::string> keys = tree->listDirectoryEx(path);
         for (auto it = keys.begin(); it != keys.end(); ++it)
             std::cout << *it << std::endl;
@@ -209,7 +209,7 @@ using LogCabin::Client::Status;
     }
 
 
-    /*void
+    void
     printConfiguration(const std::pair<uint64_t, Configuration>& configuration)
     {
         std::cout << "Configuration " << configuration.first << ":" << std::endl;
@@ -220,7 +220,7 @@ using LogCabin::Client::Status;
                       << std::endl;
         }
         std::cout << std::endl;
-    }*/
+    }
 
     int
     Ops::reconfigure(std::vector<std::string> serversInConfiguration){
@@ -229,7 +229,7 @@ using LogCabin::Client::Status;
             cluster.getConfiguration();
         uint64_t id = configuration.first;
         std::cout << "Current configuration:" << std::endl;
-        //printConfiguration(configuration);
+        printConfiguration(configuration);
 
         std::cout << "Attempting to change cluster membership to the following:"
                   << std::endl;
@@ -279,7 +279,7 @@ using LogCabin::Client::Status;
         std::cout << std::endl;
 
         std::cout << "Current configuration:" << std::endl;
-        //printConfiguration(cluster.getConfiguration());
+        printConfiguration(cluster.getConfiguration());
 
         if (result.status == ConfigurationResult::OK)
             return 0;

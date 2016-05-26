@@ -1,2 +1,3 @@
+sudo rm -R build/Impl;
 scons;
-sh python-wrap Impl Ops;
+

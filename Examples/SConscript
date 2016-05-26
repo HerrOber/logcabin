@@ -1,13 +1,20 @@
-Import('env')
+Import('env','object_files')
 
 libs = [ "pthread", "protobuf", "rt", "cryptopp" ]
 
+object_files['Ops'] = env.SharedObject(["Ops.cc"])
+
 env.Default([
-    env.StaticLibrary("foo", ['foo.cc'],
-                LIBS = libs),
+
+    #env.SharedLibrary("Ops", ["Ops.cc", "Ops.i", "#build/logcabin.so"],
+     #           LIBS = ""),
 
     env.Program("Benchmark",
                 ["Benchmark.cc", "#build/liblogcabin.a"],
+                LIBS = libs),
+
+    env.Program("Ops",
+                ["Ops_test.cc", "Ops.cc","#build/liblogcabin.a"],
                 LIBS = libs),
 
     env.Program("FailoverTest",

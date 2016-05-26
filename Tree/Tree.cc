@@ -532,7 +532,7 @@ Tree::write(const std::string& symbolicPath, const std::string& contents)
 Result
 Tree::read(const std::string& symbolicPath, std::string& contents) const
 {
-    NOTICE("Reading KEY VALUE FROM LOCAL STORAGE");
+    //NOTICE("Reading KEY VALUE FROM LOCAL STORAGE");
     ++numReadAttempted;
     contents.clear();
     Path path(symbolicPath);

@@ -1,0 +1,33 @@
+/*#include "Ops.h"*/
+%module Ops
+
+%{
+extern Ops(std::string, uint64_t, std::string);
+extern ~Ops();
+extern void mkdir(std::string);
+extern void rmdir(std::string);
+extern void read(std::string);
+extern void readLocal(std::string);
+extern void write(std::string,std::string);
+extern void remove(std::string);
+extern void dump(std::string);
+extern void dumpLocal(std::string);
+extern void list(std::string);
+extern void makeLeader();
+extern void getLeader();
+extern int reconfigure(std::vector<std::string>);
+%}
+extern Ops(std::string, uint64_t, std::string);
+extern ~Ops();
+extern void mkdir(std::string);
+extern void rmdir(std::string);
+extern void read(std::string);
+extern void readLocal(std::string);
+extern void write(std::string,std::string);
+extern void remove(std::string);
+extern void dump(std::string);
+extern void dumpLocal(std::string);
+extern void list(std::string);
+extern void makeLeader();
+extern void getLeader();
+extern int reconfigure(std::vector<std::string>);

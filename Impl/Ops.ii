@@ -1,11 +1,12 @@
-//#include "../include/LogCabin/Client.h"
-//#include "../include/LogCabin/Debug.h"
-//#include "../include/LogCabin/Util.h"
-#include <LogCabin/Client.h>
-#include <LogCabin/Debug.h>
-#include <LogCabin/Util.h>
+%module Ops
 
-//#include "Ops.h"
+%{
+#include "Ops.h"
+%}
+%include <LogCabin/Client.h>
+%include <LogCabin/Debug.h>
+%include <LogCabin/Util.h>
+
 class Ops{
 private:
     std::string clusterAddr;
@@ -14,7 +15,7 @@ private:
     std::shared_ptr<LogCabin::Client::Tree> tree;
     void dumpTree(std::string);
 	void dumpTreeLocal(std::string);
-    //void printConfiguration(const std::pair<uint64_t, LogCabin::Client::Configuration>&);
+    void printConfiguration(const std::pair<uint64_t, LogCabin::Client::Configuration>&);
 public:
 	Ops(std::string, uint64_t, std::string);
 	~Ops();
@@ -26,8 +27,9 @@ public:
     void remove(std::string);
     void dump(std::string);
     void dumpLocal(std::string);
-    void listKeys(std::string);
+    void list(std::string);
     void makeLeader();
     void getLeader();
     int reconfigure(std::vector<std::string>);
+
 };

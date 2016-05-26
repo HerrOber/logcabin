@@ -1,8 +1,13 @@
-Import('env')
+Import('env', 'object_files')
 
 libs = [ "pthread", "protobuf", "rt", "cryptopp" ]
 
+src = [
+    "Ops.cc",
+    "Ops.i"
+]
+
 env.Default([
-    env.StaticLibrary("Ops", ['Ops.cc'],
+    env.SharedLibrary("_Ops.so", src,
                 LIBS = libs)
 ])

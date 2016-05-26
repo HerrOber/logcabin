@@ -3,11 +3,11 @@ Import('env', 'object_files')
 libs = [ "pthread", "protobuf", "rt", "cryptopp" ]
 
 src = [
-    "Ops.cc",
-    "Ops.i",
+    "Ops.cc"
 ]
+object_files['Impl'] = env.StaticObject(src)
 
 env.Default([
-    env.SharedLibrary("Ops", src,
+    env.SharedLibrary("Ops", ['Ops.cc'],
                 LIBS = libs)
 ])

@@ -209,7 +209,6 @@ makeLeaderCall(LeaderRPCBase& leaderRPC,
     Protocol::Client::StateMachineQuery::Request qrequest;
     Protocol::Client::StateMachineQuery::Response qresponse;
     *qrequest.mutable_tree() = request;
-    NOTICE("\nMAKE LEADER CLIENT IMPL\n");
     status = leaderRPC.call(Protocol::Client::OpCode::MAKE_LEADER_CMD,
                             qrequest, qresponse, timeout);
     switch (status) {
@@ -567,11 +566,11 @@ ClientImpl::ClientImpl(const std::map<std::string, std::string>& options)
     , exactlyOnceRPCHelper(this)
     , eventLoopThread()
 {
-    NOTICE("Configuration settings:\n"
+    /*NOTICE("Configuration settings:\n"
            "# begin config\n"
            "%s"
            "# end config",
-           Core::StringUtil::toString(config).c_str());
+           Core::StringUtil::toString(config).c_str());*/
     std::string uuid = config.read("clusterUUID", std::string(""));
     if (!uuid.empty())
         clusterUUID.set(uuid);
@@ -597,7 +596,6 @@ void
 ClientImpl::initDerived()
 {
     if (!leaderRPC) { // sometimes set in unit tests
-        NOTICE("Using server list: %s", hosts.c_str());
         leaderRPC.reset(new LeaderRPC(
             RPC::Address(hosts, Protocol::Common::DEFAULT_PORT),
             clusterUUID,

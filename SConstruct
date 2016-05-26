@@ -1,8 +1,10 @@
+#!python
 from distutils.version import LooseVersion as Version
 import re
 import sys
 import os
 import subprocess
+import distutils.sysconfig
 
 # Python 2.6 doesn't have subprocess.check_output
 try:
@@ -39,7 +41,8 @@ opts = Variables('Local.sc')
 opts.AddVariables(
     ("CC", "C Compiler"),
     ("CPPPATH", "The list of directories that the C preprocessor "
-                "will search for include directories", []),
+                "will search for include directories", ["/usr/include/python2.7"]),
+    ("LIBPATH", "", ["/usr/lib/python2.7"]),
     ("CXX", "C++ Compiler"),
     ("CXX_FAMILY", "C++ compiler family (gcc or clang)", "auto"),
     ("CXX_VERSION", "C++ compiler version", "auto"),
@@ -61,11 +64,13 @@ opts.AddVariables(
 )
 
 env = Environment(options = opts,
+                  SWIGFLAGS=['-Wall', '-c++','-python'],
+                  SHLIBPREFIX="",
                   tools = ['default', 'protoc', 'packaging'],
                   ENV = os.environ)
 Help(opts.GenerateHelpText(env))
 
-
+env['STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME']=1
 
 # Needed for Clang Static Analyzer's scan-build tool
 env["CC"] = os.getenv("CC") or env["CC"]
@@ -254,6 +259,7 @@ PhonyTargets(docs = "doxygen docs/Doxyfile")
 PhonyTargets(tags = "ctags -R --exclude=build --exclude=docs .")
 
 clientlib = env.StaticLibrary("build/logcabin",
+#clientlib = env.StaticLibrary("build/logcabin",
                   (object_files['Client'] +
                    object_files['Tree'] +
                    object_files['Protocol'] +
@@ -299,13 +305,15 @@ except OSError:
 env.InstallAs('/etc/init.d/logcabin',           'scripts/logcabin-init-redhat')
 env.InstallAs('/usr/bin/logcabinctl',           'build/Client/ServerControl')
 env.InstallAs('/usr/bin/logcabind',             'build/LogCabin')
-env.InstallAs('/usr/bin/logcabin',              'build/Examples/TreeOps')
+env.InstallAs('/usr/bin/logcabin',              'build/Examples/Ops')
+#env.InstallAs('/usr/bin/logcabin',              'build/Examples/Opslib')
+env.InstallAs('/usr/bin/logcabin-treeops',              'build/Examples/TreeOps')
 env.InstallAs('/usr/bin/logcabin-benchmark',    'build/Examples/Benchmark')
 env.InstallAs('/usr/bin/logcabin-reconfigure',  'build/Examples/Reconfigure')
 env.InstallAs('/usr/bin/logcabin-smoketest',    'build/Examples/SmokeTest')
 env.InstallAs('/usr/bin/logcabin-storage',      'build/Storage/Tool')
 env.InstallAs('/var/log/logcabin',              'build/emptydir')
-env.InstallAs('/usr/bin/logcabin',              'build/Impl/Ops')
+#env.InstallAs('/usr/bin/logcabin',              'build/Impl/Ops')
 env.Alias('install', ['/etc', '/usr', '/var'])
 
 

@@ -3,21 +3,14 @@
 echo Creating Python Interface From [$1/$2.cc, $1/$2.i, $1/$2.i] Using Swig.;
 
 cwd=$(pwd);
-#cp $1/$2.cc build/$1/$2.cc;
-#cp $1/$2.h build/$1/$2.h;
-#cp $1/$2.i build/$1/$2.i;
-#cp $1/setup.py $1/setup.py;
+cp $1/$2.i build/$1/$2.i;
 
-#cp build/liblogcabin.a $1/liblogcabin.a;
+cd build/$1;
 
-#cd build/$1;
-cd $1;
-
-echo "compile";
-g++ -I/~/Applications/coherent/logcabin/include -std=c++11 -c -fPIC $2.cc liblogcabin.a; 
-
-echo "swig";
+#echo "compile";
 swig -c++ -python $2.i;
+
+g++ -c 
 
 #echo "-fPIC";
 #g++ -std=c++11 -c -fPIC $2_wrap.cxx  -I/usr/include/python2.7 -I/usr/lib/python2.7;

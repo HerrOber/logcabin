@@ -13,8 +13,23 @@ src = [
 ]
 object_files['Client'] = env.StaticObject(src)
 
+src2 = [
+    "Backoff.cc",
+    "Client.cc",
+    "ClientImpl.cc",
+    "LeaderRPC.cc",
+    "MockClientImpl.cc",
+    "SessionManager.cc",
+    "Util.cc",
+    "Ops.cc",
+    "Ops.i",
+]
+
 env.Default([
     env.Program("ServerControl",
                 (["ServerControl.cc", "#build/liblogcabin.a"]),
                 LIBS = libs),
+    
+#    env.SharedLibrary("Ops", src2,
+#                LIBS = libs),
 ])

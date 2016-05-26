@@ -239,7 +239,8 @@ Tree::operator=(const Tree& other)
     // Hold one lock at a time to avoid deadlock and handle self-assignment.
     std::shared_ptr<const TreeDetails> otherTreeDetails =
                                             other.getTreeDetails();
-    std::lock_guard<std::mutex> lockGuard(mutex);
+    //std::cout << "eyyyy1" << std::endl;
+    //std::lock_guard<std::mutex> lockGuard(mutex);
     treeDetails = otherTreeDetails;
     return *this;
 }

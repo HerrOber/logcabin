@@ -85,35 +85,6 @@ LeaderRPC::Call::start(OpCode opCode,
                        TimePoint timeout)
 {
     // Save a reference to the leaderSession
-
-    switch (opCode) {
-        case OpCode::GET_SERVER_INFO:
-            NOTICE("\n\nINFO\n\n");        
-            break;
-        case OpCode::VERIFY_RECIPIENT:
-            NOTICE("\n\nVerify\n\n");        
-            break;
-        case OpCode::GET_CONFIGURATION:
-            NOTICE("\n\nConf\n\n");        
-            break;
-        case OpCode::SET_CONFIGURATION:
-            NOTICE("\n\nset conf\n\n");        
-            break;
-        case OpCode::STATE_MACHINE_COMMAND:
-            NOTICE("\n\nSM Command\n\n");       
-            break;
-        case OpCode::STATE_MACHINE_QUERY:
-            NOTICE("\n\nSM Query\n\n");
-            break;
-        case OpCode::STATE_MACHINE_QUERY_LOCAL:
-        case OpCode::MAKE_LEADER_CMD:
-            NOTICE("\n\nMake Leader\n\n");
-            break;
-        case OpCode::GET_LEADER_CMD:
-            NOTICE("\n\nGet Leader\n\n"); 
-            break;
-        }
-
     cachedSession = leaderRPC.getSession(timeout);
     rpc = RPC::ClientRPC(cachedSession,
                          Protocol::Common::ServiceId::CLIENT_SERVICE,
