@@ -138,6 +138,12 @@ main(int argc, char** argv)
             }
             break;
         }
+        else if ("-h" == cmdStr || "--h" == cmdStr || "-help" == cmdStr || "--help" == cmdStr){
+            std::cout << "Usage:\nOps ip:port[of raft server] cmd [path]" << std::endl;
+            std::cout << "Required is IP and Port to the raft server to connect to. The cmd is also required." << std::endl;
+            std::cout << "The path field is optional and this is dependent on the cmd type." << std::endl;
+            return 0;
+        }
     }
     if(0){
         std::cout << "No command" << std::endl;
