@@ -66,6 +66,7 @@ main(int argc, char** argv)
     Command command;
     std::string path;
     std::vector<std::string> serversInConfiguration;
+    std::string node = argv[1];
     for(int i = 0; i < argc; i++){
         std::string cmdStr = argv[i];
         if ("mkdir" == cmdStr){
@@ -144,7 +145,8 @@ main(int argc, char** argv)
 
     //std::cout << "Ops test " << std::endl;
     try {
-        Ops opsVar = Ops("10.0.2.1:5254", 0, "");
+        //Ops opsVar = Ops("10.0.2.1:5254", 0, "");
+        Ops opsVar = Ops(node, 0, "");
         std::string result;
         switch (command){
             case Command::MKDIR:
