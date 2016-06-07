@@ -61,7 +61,7 @@ using LogCabin::Client::Status;
                 dump.append(dumpTree(child));
 
             } else { // file
-                dump.append(child + ":>>\n");
+                dump.append(child + ":>>");
                 dump.append(tree->readEx(child) + "<<\n");
             }
         }
