@@ -24,6 +24,7 @@
 #include <LogCabin/Debug.h>
 #include <LogCabin/Util.h>
 #include "Ops.h"
+#include <time.h>
 
 namespace {
 
@@ -63,6 +64,7 @@ readStdin()
 int
 main(int argc, char** argv)
 {
+    const std::clock_t begin_time = std::clock();
     Command command;
     std::string path;
     std::vector<std::string> serversInConfiguration;
@@ -227,7 +229,8 @@ main(int argc, char** argv)
                 std::cout << res + "" << std::endl;
                 break;   
         }
-
+        std::cout << "Elapsed time:";
+        std::cout << float( std::clock () - begin_time ) /  CLOCKS_PER_SEC << std::endl;
         return 0;
 
     } catch (const LogCabin::Client::Exception& e) {

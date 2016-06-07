@@ -24,6 +24,8 @@ using LogCabin::Client::Result;
 using LogCabin::Client::Server;
 using LogCabin::Client::Status;
 
+    /// TODO do try catch for all *Ex() function calls
+
     Ops::Ops(std::string clusterAddr = "10.0.2.1:5254", uint64_t timeout = 0, std::string logPolicy = "")
     :clusterAddr (clusterAddr)
     ,timeout (timeout)
@@ -59,8 +61,8 @@ using LogCabin::Client::Status;
                 dump.append(dumpTree(child));
 
             } else { // file
-                dump.append(child + ":\n");
-                dump.append(tree->readEx(child) + "\n");
+                dump.append(child + ":>>\n");
+                dump.append(tree->readEx(child) + "<<\n");
             }
         }
         return dump;
@@ -77,8 +79,8 @@ using LogCabin::Client::Status;
                 dump.append(dumpTreeLocal(child));
 
             } else { // file
-                dump.append(child + ":\n");
-                dump.append(tree->readExLocal(child) + "\n");
+                dump.append(child + ":>>");
+                dump.append(tree->readExLocal(child) + "<<\n");
             }
         }
         return dump;
