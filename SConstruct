@@ -243,7 +243,7 @@ SConscript('Client/SConscript', variant_dir='build/Client')
 SConscript('Storage/SConscript', variant_dir='build/Storage')
 SConscript('Server/SConscript', variant_dir='build/Server')
 SConscript('Examples/SConscript', variant_dir='build/Examples')
-SConscript('Impl/SConscript', variant_dir='build/Impl')
+#SConscript('Impl/SConscript', variant_dir='build/Impl')
 SConscript('test/SConscript', variant_dir='build/test')
 
 # This function is taken from http://www.scons.org/wiki/PhonyTargets

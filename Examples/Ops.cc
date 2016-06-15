@@ -234,7 +234,7 @@ using LogCabin::Client::Status;
         for (auto it = configuration.second.begin();
              it != configuration.second.end();
              ++it) {
-            std::cout << "- " << it->serverId << ": " << it->addresses
+            std::cout << "ID:" << it->serverId << "<<" << it->addresses << ">>"
                       << std::endl;
         }
         std::cout << std::endl;
@@ -273,13 +273,13 @@ using LogCabin::Client::Status;
                     servers.emplace_back(info.serverId, info.addresses);
                     break;
                 case Status::TIMEOUT:
-                    std::cout << "Could not fetch server info from "
-                              << *it << " (" << result.error << "). Aborting."
+                    std::cout << "TIMEOUT_ERROR <<"
+                              << *it << ">> (" << result.error << "). Aborting."
                               << std::endl;
                     return 1;
                 default:
-                    std::cout << "Unknown error from "
-                              << *it << " (" << result.error << "). Aborting."
+                    std::cout << "Unknown_ERROR <<"
+                              << *it << ">> (" << result.error << "). Aborting."
                               << std::endl;
                     return 1;
             }
@@ -287,13 +287,13 @@ using LogCabin::Client::Status;
         std::cout << std::endl;
 
         ConfigurationResult result = cluster.setConfiguration(id, servers);
-        std::cout << "Membership change result: ";
+        std::cout << "GM_STATUS:";
         if (result.status == ConfigurationResult::OK) {
-            std::cout << "OK" << std::endl;
+            std::cout << "<<OK>>" << std::endl;
         } else if (result.status == ConfigurationResult::CHANGED) {
-            std::cout << "CHANGED (" << result.error << ")" << std::endl;
+            std::cout << "<<CHANGED_ERROR>> (" << result.error << ")" << std::endl;
         } else if (result.status == ConfigurationResult::BAD) {
-            std::cout << "BAD SERVERS (" << result.error << "):" << std::endl;
+            std::cout << "<<BAD_SERVERS>> (" << result.error << "):" << std::endl;
             for (auto it = result.badServers.begin();
                  it != result.badServers.end();
                  ++it) {
