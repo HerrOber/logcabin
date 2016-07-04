@@ -156,6 +156,17 @@ main(int argc, char** argv)
         //Ops opsVar = Ops("10.0.2.1:5254", 0, "");
         Ops opsVar = Ops(node, 0, "");
         std::string result;
+        
+        std::string input;
+        std::string delimiter;
+        std::string delimiter2;
+        size_t pos;
+        std::string token;
+        size_t pos2;            
+        std::string newPath;
+        std::string fileName;
+        std::string newData;
+
         switch (command){
             case Command::MKDIR:
                 /*std::cout << "mkdir:"+path << std::endl;*/
@@ -187,7 +198,35 @@ main(int argc, char** argv)
             
             case Command::WRITE:
                 /*std::cout << "write:"+path + "-" + readStdin() << std::endl;*/
-                opsVar.write(path, readStdin());
+                //opsVar.write(path, readStdin());
+
+                input = readStdin();
+                delimiter = "<:_<:";
+                delimiter2 = "::_::";
+                pos = 0;
+                token = "";
+                while((pos = input.find(delimiter)) != std::string::npos){
+                    token = input.substr(0, pos);
+                    
+                    pos2 = token.find(delimiter2);
+                    newPath = token.substr(0, pos2);
+                    token.erase(0, pos2 + delimiter2.length());
+
+                    pos2 = token.find(delimiter2);
+                    fileName = token.substr(0, pos2);
+                    token.erase(0, pos2 + delimiter2.length());
+                    
+                    newData = token.substr(0, token.length());
+
+                    input.erase(0, pos + delimiter.length());
+                    std::cout << "path: " + newPath << std::endl;
+                    std::cout << "fileName: " + fileName << std::endl;
+                    std::cout << "data: " + newData << std::endl;
+                    opsVar.mkdir(newPath);
+                    opsVar.write(newPath + "/" + fileName, newData);
+                }
+                
+                //opsVar.write(path, input);
                 break;
             
             // TODO!!! NOT WORKING!!!!
