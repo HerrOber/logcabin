@@ -222,8 +222,12 @@ main(int argc, char** argv)
                     std::cout << "path: " + newPath << std::endl;
                     std::cout << "fileName: " + fileName << std::endl;
                     std::cout << "data: " + newData << std::endl;
-                    opsVar.mkdir(newPath);
-                    opsVar.write(newPath + "/" + fileName, newData);
+                    if ("__REMOVE__" == newData){
+                        opsVar.rmdir(newPath + "/" + fileName);
+                    }else{
+                        opsVar.mkdir(newPath);
+                        opsVar.write(newPath + "/" + fileName, newData);
+                    }
                 }
                 
                 //opsVar.write(path, input);
